@@ -1,17 +1,38 @@
-var app = require('express').createServer()
-var io = require('socket.io').listen(app);
 
-app.listen(8080);
+// We connect to local MySQL instance
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+	host : 'localhost',
+	user : 'root',
+	password : '',
+	database : 'chat',
+});
+
+// We load required modules and start the server
+var express = require('express');
+var app = express();
+app.use(express.static(__dirname + '/client'));
+var http = require('http');
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+server.listen(8080);
 
 // routing
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/client/index.html');
 });
 
+connection.connect(function(err){
+	if (err) throw err;
+});
+
 // usernames which are currently connected to the chat
 var usernames = {};
 
 io.sockets.on('connection', function (socket) {
+
+	// We store the remote address here so we can use the IP later on
+	var rAddr = socket.handshake.address;
 
 	// when the client emits 'sendchat', this listens and executes
 	socket.on('sendchat', function (data) {
@@ -34,8 +55,17 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// when the user try to login ... perform this
-	socket.on('login', function(){
-		socket.emit('alert','SERVER','no no no');
+	socket.on('login', function(username,password) {
+		console.log("Login from " + username + "@" + rAddr.address);
+		connection.query('SELECT count(*) as cntRows FROM members WHERE username = ' + connection.escape(username) + ' AND password = ' + connection.escape(password) + '', function(err,rows,fields) {
+		if(err) throw err;
+		
+		var cntRows = rows[0].cntRows;
+		if(cntRows>0) {
+			socket.emit('enterchat',true);
+		}
+
+		});
 	});
 
 

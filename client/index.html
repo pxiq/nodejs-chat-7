@@ -1,11 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Chat v1.0</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<link href='css/bootstrap.css' rel='stylesheet'>
+	<style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+
+      .form-signin {
+        max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+
+    </style>
+   	<link href='css/bootstrap-responsive.css' rel='stylesheet'>
+   	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+	<link rel="shortcut icon" href="ico/favicon.png">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>
 	var socket = io.connect('http://localhost:8080');
 
 	// on connection to server, ask for user's name with an anonymous callback
-	/*
-	socket.on('connect', function(){
+	
+	/*socket.on('connect', function(){
 		// call the server-side function 'adduser' and send one parameter (value of prompt)
 		socket.emit('adduser', prompt("What's your name?"));
 	});*/
@@ -22,38 +76,78 @@
 			$('#users').append('<div>' + key + '</div>');
 		});
 	});
-	
-	// on alert
-	socket.on('alert', function(data) {
-		alert(data);
+
+	socket.on('enterchat', function (isaccepted)) {
+		if (isaccepted) {
+			
+		}
 	});
 
 	// on load of page
 	$(function(){
-		// when the client clicks SEND
-		$('#send_username').click( function() {
+		// We send the username/password to the login
+		$('#send_login').click( function() {
 			var username = $('#username').val();
+			var password = $('#password').val();
 			$('#username').val('');
-			// tell server to execute 'sendchat' and send along one parameter
-			//socket.emit('sendchat', message);
-			socket.emit('login', username);
+			$('#password').val('');
+			socket.emit('login', username, password);
 		});
 
 		// when the client hits ENTER on their keyboard
-		$('#username').keypress(function(e) {
+		$('#send_login').keypress(function(e) {
 			if(e.which == 13) {
 				$(this).blur();
-				$('#send_username').focus().click();
+				$('#send_login').focus().click();
 			}
 		});
 	});
 
 </script>
+</head>
+
+<body>
+
+    <div class="container">
+      <form class="form-signin">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input id="username" type="text" class="input-block-level" placeholder="Username or Email address">
+        <input id="password" type="password" class="input-block-level" placeholder="Password">
+        <label class="checkbox">
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        <button id='send_login' class="btn btn-large btn-primary" type="submit">Sign in</button>
+      </form>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap-transition.js"></script>
+    <script src="js/bootstrap-alert.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap-tab.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap-popover.js"></script>
+    <script src="js/bootstrap-button.js"></script>
+    <script src="js/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>
+<!--
 <h4>Please enter your username:</h4>
 <div>
 	<input id="username" type='text' width=30>
 	<input type="button" id="send_username" value="Connect">
 </div>
+-->
+
 <!--
 <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
 	<b>USERS</b>
